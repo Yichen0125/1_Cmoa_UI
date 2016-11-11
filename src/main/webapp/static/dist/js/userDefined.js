@@ -289,65 +289,14 @@
             event.stopPropagation();
             this.setAttribute("disabled", "disabled");
             //---------------------------------------
-            //console.log(file.name);
             var that=this.parentNode;
-            
             uploadFile(that, file, progressbar);
             var times = setInterval(function() {
                 var p = this.previousSibling.children[0].innerHTML;
                 if (p == "100%") {
                     clearInterval(times);
-                    var li = this.parentNode;
-                    console.log(li);
-                    console.log(li.className);
-                    
                     this.nextSibling.parentNode.removeChild(this.nextSibling);
                     this.previousSibling.parentNode.removeChild(this.previousSibling);
-                    
-                    var input1=document.createElement('input');
-                    input1.setAttribute("type","hidden");
-                    input1.setAttribute("value",li.querySelector('a').innerHTML);
-                    var input2=document.createElement('input');
-                    input2.setAttribute("type","hidden");
-                    input2.setAttribute("value",li.className);
-
-
-                    var deleteButton = document.createElement('button');
-                    var downloadButton = document.createElement('button');
-                    deleteButton.innerHTML = "删除文件";
-                    deleteButton.className="btn btn-default btn-xs deleteButton";
-                    downloadButton.innerHTML = "下载文件";
-                    downloadButton.className="btn btn-default btn-xs downLoadButton";
-                    li.appendChild(input1);
-                    li.appendChild(deleteButton);
-                    li.appendChild(input2);
-                    li.appendChild(downloadButton);
-                    li.removeAttribute("class");
-
-                    deleteDownload(deleteButton);
-
-                    var names = this.previousSibling.innerHTML;
-                    downloadButton.onclick = function(event) {
-                        event.stopPropagation();
-                        /*fetch('uploads/' + names + '').then(res => res.blob().then(blob => {
-                            var a = document.createElement('a');
-                            var url = window.URL.createObjectURL(blob);
-                            var filename = '' + names + '';
-                            a.href = url;
-                            a.download = filename;
-                            a.click();
-                            window.URL.revokeObjectURL(url);
-                        }))*/
-                        
-                        var id = $(this).prev(":hidden").val();
-        				var url = "/1_Cmoa_UI/downLoad/" + id;
-        				$("#hiddenForm").attr("action",url);
-        				$("#_method").val("POST");
-        				$("#hiddenForm").submit();
-        				return false;
-                        
-                    };
-
                     this.parentNode.removeChild(this);
                 }
             }.bind(this), 100);
@@ -398,15 +347,36 @@
         
         fd.append("Myfile", file);
         fd.append("filename", "haha");
-       
+        
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
-                console.log(xhr.responseText);
-                console.log(that);
-                
-            	that.className=xhr.responseText;
-            	
-            	
+            	var input1=document.createElement('input');
+                input1.setAttribute("type","hidden");                
+                input1.setAttribute("value",that.querySelector('a').innerHTML);
+                var input2=document.createElement('input');
+                input2.setAttribute("type","hidden");
+                input2.setAttribute("value",xhr.responseText);
+                var deleteButton = document.createElement('button');
+                var downloadButton = document.createElement('button');
+                deleteButton.innerHTML = "删除文件";
+                deleteButton.className="btn btn-default btn-xs deleteButton";
+                downloadButton.innerHTML = "下载文件";
+                downloadButton.className="btn btn-default btn-xs downLoadButton";
+                that.appendChild(input1);
+                that.appendChild(deleteButton);
+                that.appendChild(input2);
+                that.appendChild(downloadButton);
+
+                deleteDownload(deleteButton);
+                downloadButton.onclick = function(event) {
+                    event.stopPropagation(); 
+                    var id = $(this).prev(":hidden").val();
+    				var url = "/1_Cmoa_UI/downLoad/" + id;
+    				$("#hiddenForm").attr("action",url);
+    				$("#_method").val("POST");
+    				$("#hiddenForm").submit();
+    				return false;   
+                };
             }
         }
         
